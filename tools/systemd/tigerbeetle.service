@@ -27,7 +27,7 @@ Environment=TIGERBEETLE_REPLICA_INDEX=0
 Environment=TIGERBEETLE_CLUSTER_ID=0
 Environment=TIGERBEETLE_DATA_FILE=/run/tigerbeetle/0_0.tigerbeetle
 
-Type=exec
+Type=simple
 
 # Ensure the directory exists and has the correct permissions
 ExecStartPre=/bin/mkdir -p /run/tigerbeetle
