@@ -5,21 +5,36 @@ After=network-online.target
 Wants=network-online.target systemd-networkd-wait-online.service
 
 [Service]
-DynamicUser=true
-DevicePolicy=closed
-ProtectHome=true
-StateDirectory=tigerbeetle
-StateDirectoryMode=700
+# Replacing DynamicUser with a specific user and group
+User=tigerbeetle
+Group=tigerbeetle
 
+# Restricting access to device files
+PrivateDevices=true
+
+# Limiting access to home directory
+ProtectHome=true
+
+# Instead of StateDirectory, manually specify the runtime directory
+RuntimeDirectory=tigerbeetle
+RuntimeDirectoryMode=0700
+
+# Setting environment variables
 Environment=TIGERBEETLE_CACHE_GRID_SIZE=1GiB
 Environment=TIGERBEETLE_ADDRESSES=3001
 Environment=TIGERBEETLE_REPLICA_COUNT=1
 Environment=TIGERBEETLE_REPLICA_INDEX=0
 Environment=TIGERBEETLE_CLUSTER_ID=0
-Environment=TIGERBEETLE_DATA_FILE=%S/tigerbeetle/0_0.tigerbeetle
+Environment=TIGERBEETLE_DATA_FILE=/run/tigerbeetle/0_0.tigerbeetle
 
 Type=exec
+
+# Ensure the directory exists and has the correct permissions
+ExecStartPre=/bin/mkdir -p /run/tigerbeetle
+ExecStartPre=/bin/chown tigerbeetle:tigerbeetle /run/tigerbeetle
 ExecStartPre=/usr/local/bin/tigerbeetle-pre-start.sh
+
+# Start the main service
 ExecStart=/usr/local/bin/tigerbeetle start --cache-grid=${TIGERBEETLE_CACHE_GRID_SIZE} --addresses=${TIGERBEETLE_ADDRESSES} ${TIGERBEETLE_DATA_FILE}
 
 [Install]
